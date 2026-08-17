@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7 Flip Scoreboard</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <h1>7 Flip Scoreboard</h1>
+      <div id="statusBanner" class="status-banner"></div>
+    </header>
+
+    <section class="panel sticky-panel hidden" id="liveTotalsPanel">
+      <h2>Current Standings</h2>
+      <div id="liveTotals" class="live-totals"></div>
+    </section>
+
+    <div id="storageWarning" class="storage-warning hidden">
+      Storage unavailable — scores won't persist after reload.
+    </div>
+
+    <section class="panel" id="playerPanel">
+      <h2>Players</h2>
+      <form id="addPlayerForm" class="add-player-form">
+        <input type="text" id="playerNameInput" placeholder="Player name" maxlength="20" autocomplete="off">
+        <div class="color-picker" id="colorPicker"></div>
+        <button type="submit" id="addPlayerBtn">Add Player</button>
+      </form>
+      <p id="playerHint" class="hint"></p>
+      <ul id="playerList" class="player-list"></ul>
+    </section>
+
+    <section class="panel" id="scoreEntryPanel">
+      <h2>Round <span id="roundNumber"></span></h2>
+      <form id="scoreEntryForm"></form>
+      <p id="scoreEntryError" class="error hidden"></p>
+    </section>
+
+    <section class="panel" id="gameOverPanel">
+      <h2>Game Over</h2>
+      <div id="standings"></div>
+      <div class="game-over-actions">
+        <button id="newGameKeepBtn">New Game (keep players)</button>
+        <button id="newGameClearBtn" class="secondary">New Game (clear players)</button>
+      </div>
+    </section>
+
+    <section class="panel" id="historyPanel">
+      <h2>Scoreboard</h2>
+      <div class="table-wrap">
+        <table id="historyTable"></table>
+      </div>
+    </section>
+  </div>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <script src="app.js"></script>
+</body>
+</html>
