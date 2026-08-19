@@ -2,6 +2,7 @@
   "use strict";
 
   const STORAGE_KEY = "7flip_scoreboard_state";
+  const THEME_KEY = "7flip_theme";
   const TTL_MS = 60 * 60 * 1000; // 1 hour
   const MIN_PLAYERS = 3;
   const MAX_PLAYERS = 8;
@@ -155,7 +156,7 @@
   }
 
   function checkGameEnd() {
-    const anyOver = state.players.some((p) => getTotal(p.id) > SCORE_LIMIT);
+    const anyOver = state.players.some((p) => getTotal(p.id) >= SCORE_LIMIT);
     if (anyOver) {
       state.status = "ended";
       state.winnerIds = determineWinners();
@@ -195,8 +196,12 @@
     const round = {};
     for (const p of state.players) {
       const raw = scoresByPlayerId[p.id];
+      if (raw === "" || raw === undefined || raw === null) {
+        round[p.id] = 0;
+        continue;
+      }
       const n = Number(raw);
-      if (raw === "" || raw === undefined || !Number.isInteger(n) || n < 0) {
+      if (!Number.isInteger(n) || n < 0) {
         errorEl.textContent = `Enter a whole number ≥ 0 for every player.`;
         errorEl.classList.remove("hidden");
         return;
@@ -267,7 +272,7 @@
       name.textContent = p.name;
 
       const value = document.createElement("span");
-      value.className = "live-total-value" + (total > SCORE_LIMIT ? " over-limit" : "");
+      value.className = "live-total-value" + (total >= SCORE_LIMIT ? " over-limit" : "");
       if (prevTotals[p.id] !== undefined && prevTotals[p.id] !== total) {
         value.classList.add("pulse");
       }
@@ -370,6 +375,7 @@
       input.min = "0";
       input.step = "1";
       input.dataset.playerId = p.id;
+      input.value = "";
       input.placeholder = "0";
 
       row.appendChild(label);
@@ -465,7 +471,7 @@
       const td = document.createElement("td");
       const total = getTotal(p.id);
       td.textContent = total;
-      if (total > SCORE_LIMIT) td.classList.add("over-limit");
+      if (total >= SCORE_LIMIT) td.classList.add("over-limit");
       totalsRow.appendChild(td);
     });
     tfoot.appendChild(totalsRow);
@@ -502,6 +508,30 @@
 
   document.getElementById("newGameKeepBtn").addEventListener("click", () => resetGame(true));
   document.getElementById("newGameClearBtn").addEventListener("click", () => resetGame(false));
+
+  function getPreferredTheme() {
+    try {
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved === "dark" || saved === "light") return saved;
+    } catch (e) { /* ignore */ }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    const btn = document.getElementById("themeToggle");
+    const dark = theme === "dark";
+    btn.setAttribute("aria-pressed", dark ? "true" : "false");
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.textContent = dark ? "Light" : "Dark";
+  }
+
+  applyTheme(getPreferredTheme());
+  document.getElementById("themeToggle").addEventListener("click", () => {
+    const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    applyTheme(next);
+    try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* ignore */ }
+  });
 
   renderColorPicker();
   render();

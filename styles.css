@@ -2,6 +2,7 @@
   --bg-a: #fff1e6;
   --bg-b: #ffe3f1;
   --bg-c: #e6f3ff;
+  --page-bg: #fffaf3;
   --panel: #ffffff;
   --panel-alt: #f8f5ff;
   --panel-border: #ece4fb;
@@ -15,6 +16,36 @@
   --success: #12b76a;
   --radius: 14px;
   --shadow: 0 10px 30px -12px rgba(60, 40, 90, 0.18);
+  --winner-bg: linear-gradient(135deg, #fff4d6, #ffe9c4);
+  --winner-text: #8a5a00;
+  --leader-bg: linear-gradient(135deg, #fff8e8, #fff1d0);
+  --warn-bg: #fff1f1;
+  --warn-text: #b3261e;
+  --sticky-border: #e2d4ff;
+  --swatch-ring: #ffffff;
+}
+
+html { color-scheme: light; }
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-a: #2a221c;
+  --bg-b: #3a2233;
+  --bg-c: #1c2a38;
+  --page-bg: #14121c;
+  --panel: #221f2e;
+  --panel-alt: #2c2838;
+  --panel-border: #3d3850;
+  --text: #f3eefc;
+  --muted: #a8a2be;
+  --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.55);
+  --winner-bg: linear-gradient(135deg, #3d3218, #4a3a14);
+  --winner-text: #ffd27a;
+  --leader-bg: linear-gradient(135deg, #3a3018, #453614);
+  --warn-bg: #3a1c1c;
+  --warn-text: #ff8a86;
+  --sticky-border: #4a3d6e;
+  --swatch-ring: #221f2e;
 }
 
 * { box-sizing: border-box; }
@@ -26,27 +57,68 @@ body {
     radial-gradient(circle at 10% 0%, var(--bg-b) 0%, transparent 45%),
     radial-gradient(circle at 100% 15%, var(--bg-c) 0%, transparent 45%),
     radial-gradient(circle at 50% 100%, var(--bg-a) 0%, transparent 50%),
-    #fffaf3;
+    var(--page-bg);
   background-attachment: fixed;
   color: var(--text);
   padding: 24px;
 }
 
 .app {
-  max-width: 760px;
+  max-width: 980px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
+.play-layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(240px, 300px);
+  gap: 20px;
+  align-items: start;
+}
+
+.play-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .play-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.app-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
 .app-header h1 {
-  margin: 0 0 8px;
+  margin: 0;
   font-size: 1.7rem;
   background: linear-gradient(90deg, var(--accent), var(--accent-2) 55%, var(--purple));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+.theme-toggle {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+}
+.theme-toggle:hover:not(:disabled) {
+  background: var(--panel-alt);
+  filter: none;
+  box-shadow: var(--shadow);
 }
 
 .status-banner {
@@ -59,16 +131,16 @@ body {
   transition: background 0.3s, border-color 0.3s, color 0.3s;
 }
 .status-banner.ended {
-  background: linear-gradient(135deg, #fff4d6, #ffe9c4);
+  background: var(--winner-bg);
   border-color: var(--gold);
-  color: #8a5a00;
+  color: var(--winner-text);
   animation: glow-pulse 1.8s ease-in-out infinite;
 }
 
 .storage-warning {
-  background: #fff1f1;
+  background: var(--warn-bg);
   border: 1px solid var(--danger);
-  color: #b3261e;
+  color: var(--warn-text);
   padding: 8px 12px;
   border-radius: var(--radius);
   font-size: 0.9rem;
@@ -93,7 +165,7 @@ body {
   top: 12px;
   z-index: 20;
   box-shadow: 0 14px 32px -12px rgba(123, 92, 255, 0.28);
-  border-color: #e2d4ff;
+  border-color: var(--sticky-border);
 }
 
 .hidden { display: none !important; }
@@ -130,7 +202,7 @@ body {
 }
 .color-swatch.selected {
   border-color: var(--text);
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--text);
+  box-shadow: 0 0 0 2px var(--swatch-ring), 0 0 0 4px var(--text);
 }
 
 button {
@@ -231,6 +303,14 @@ button:disabled {
   border: 1px solid var(--panel-border);
   background: var(--panel-alt);
   color: var(--text);
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.score-row input::-webkit-outer-spin-button,
+.score-row input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .table-wrap {
@@ -287,7 +367,7 @@ td.over-limit {
 }
 
 .standing-row.winner {
-  background: linear-gradient(135deg, #fff4d6, #ffe9c4);
+  background: var(--winner-bg);
   border: 1px solid var(--gold);
 }
 
@@ -321,7 +401,7 @@ td.over-limit {
 
 .live-total-chip.leader {
   border-color: var(--gold);
-  background: linear-gradient(135deg, #fff8e8, #fff1d0);
+  background: var(--leader-bg);
   box-shadow: 0 0 0 1px var(--gold) inset, 0 4px 14px -4px rgba(255, 183, 3, 0.5);
 }
 

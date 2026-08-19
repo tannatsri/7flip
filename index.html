@@ -5,11 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>7 Flip Scoreboard</title>
 <link rel="stylesheet" href="styles.css">
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("7flip_theme");
+      var theme = saved === "dark" || saved === "light"
+        ? saved
+        : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (e) { /* ignore */ }
+  })();
+</script>
 </head>
 <body>
   <div class="app">
     <header class="app-header">
-      <h1>7 Flip Scoreboard</h1>
+      <div class="app-header-row">
+        <h1>7 Flip Scoreboard</h1>
+        <button type="button" id="themeToggle" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark mode">Dark</button>
+      </div>
       <div id="statusBanner" class="status-banner"></div>
     </header>
 
@@ -22,31 +36,35 @@
       Storage unavailable — scores won't persist after reload.
     </div>
 
-    <section class="panel" id="playerPanel">
-      <h2>Players</h2>
-      <form id="addPlayerForm" class="add-player-form">
-        <input type="text" id="playerNameInput" placeholder="Player name" maxlength="20" autocomplete="off">
-        <div class="color-picker" id="colorPicker"></div>
-        <button type="submit" id="addPlayerBtn">Add Player</button>
-      </form>
-      <p id="playerHint" class="hint"></p>
-      <ul id="playerList" class="player-list"></ul>
-    </section>
+    <div class="play-layout">
+      <div class="play-main">
+        <section class="panel" id="scoreEntryPanel">
+          <h2>Round <span id="roundNumber"></span></h2>
+          <form id="scoreEntryForm"></form>
+          <p id="scoreEntryError" class="error hidden"></p>
+        </section>
 
-    <section class="panel" id="scoreEntryPanel">
-      <h2>Round <span id="roundNumber"></span></h2>
-      <form id="scoreEntryForm"></form>
-      <p id="scoreEntryError" class="error hidden"></p>
-    </section>
-
-    <section class="panel" id="gameOverPanel">
-      <h2>Game Over</h2>
-      <div id="standings"></div>
-      <div class="game-over-actions">
-        <button id="newGameKeepBtn">New Game (keep players)</button>
-        <button id="newGameClearBtn" class="secondary">New Game (clear players)</button>
+        <section class="panel" id="gameOverPanel">
+          <h2>Game Over</h2>
+          <div id="standings"></div>
+          <div class="game-over-actions">
+            <button id="newGameKeepBtn">New Game (keep players)</button>
+            <button id="newGameClearBtn" class="secondary">New Game (clear players)</button>
+          </div>
+        </section>
       </div>
-    </section>
+
+      <section class="panel" id="playerPanel">
+        <h2>Players</h2>
+        <form id="addPlayerForm" class="add-player-form">
+          <input type="text" id="playerNameInput" placeholder="Player name" maxlength="20" autocomplete="off">
+          <div class="color-picker" id="colorPicker"></div>
+          <button type="submit" id="addPlayerBtn">Add Player</button>
+        </form>
+        <p id="playerHint" class="hint"></p>
+        <ul id="playerList" class="player-list"></ul>
+      </section>
+    </div>
 
     <section class="panel" id="historyPanel">
       <h2>Scoreboard</h2>
